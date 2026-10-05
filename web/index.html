@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#080c17">
+  <meta name="description" content="DrishtiX Flow turns drone imagery into trusted parcel decisions, automatically.">
+  <title>DrishtiX Flow — From drone to decision</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+  <style>
+    :root{color-scheme:dark;--bg:#080c17;--panel:rgba(17,24,42,.76);--line:rgba(157,177,221,.12);--text:#f3f6ff;--muted:#8793af;--cyan:#5ce1e6;--blue:#7287ff;--green:#75e0a0;--amber:#ffc56d;--red:#ff777e;--mono:'DM Mono',monospace;--sans:'Manrope',sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 78% -10%,rgba(76,93,206,.19),transparent 38%),radial-gradient(ellipse at 4% 42%,rgba(23,124,154,.09),transparent 36%),var(--bg);color:var(--text);font:14px var(--sans);min-height:100vh}body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.13;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.15'/%3E%3C/svg%3E");z-index:-1}button{font:inherit;color:inherit;cursor:pointer}a{color:inherit;text-decoration:none}.shell{max-width:1480px;margin:auto;padding:0 38px}.topbar{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.5px;font-size:17px}.brand-mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(145deg,#8f9cff,#52dce3);display:grid;place-items:center;color:#101629;box-shadow:0 5px 24px #647cff4d}.brand-mark svg{width:21px}.brand em{font-style:normal;color:#8b9aff}.top-right{display:flex;align-items:center;gap:23px;color:var(--muted);font-size:12px}.live{display:flex;align-items:center;gap:8px;color:#c2d2e8}.live-dot{width:7px;height:7px;background:#68e3a0;border-radius:100%;box-shadow:0 0 12px #68e3a0;animation:pulse 1.8s infinite}.avatar{border:1px solid var(--line);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:var(--cyan);font-size:11px;background:#192239}
+    .hero{display:grid;grid-template-columns:1.12fr .88fr;gap:50px;align-items:center;padding:57px 0 34px}.eyebrow{font:10px var(--mono);letter-spacing:2.2px;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:11px}.eyebrow:before{content:"";width:26px;height:1px;background:var(--cyan)}h1{font-size:clamp(40px,5vw,68px);line-height:1.04;letter-spacing:-3.8px;margin:17px 0 19px;font-weight:700;max-width:700px}.gradient-text{background:linear-gradient(95deg,#aab5ff 8%,#65dbe9 75%);background-clip:text;color:transparent}.hero-copy{color:#99a6c1;font-size:14px;line-height:1.8;max-width:560px;margin:0}.hero-meta{display:flex;gap:22px;margin-top:24px;color:#6f7c9a;font:10px var(--mono);letter-spacing:.5px}.hero-meta span{display:flex;align-items:center;gap:7px}.hero-meta b{color:#b5c1d8;font-weight:400}.upload-card{position:relative;overflow:hidden;padding:23px;border-radius:20px;border:1px solid rgba(151,174,239,.17);background:linear-gradient(140deg,rgba(31,43,71,.76),rgba(16,24,40,.86));box-shadow:0 24px 80px #02050e6b;min-height:224px}.upload-card:after{content:"";position:absolute;width:200px;height:200px;right:-75px;top:-125px;border-radius:50%;background:#6681ff2b;filter:blur(48px);pointer-events:none}.upload-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.upload-head strong{font-size:12px}.tile-format{font:9px var(--mono);color:#8895b3;border:1px solid var(--line);padding:5px 8px;border-radius:5px}.drop-zone{min-height:125px;border:1px dashed rgba(125,151,210,.34);border-radius:13px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transition:.25s;background:rgba(7,12,23,.26);position:relative;z-index:1}.drop-zone.drag{border-color:var(--cyan);background:#55dfe50e;transform:scale(.99)}.upload-icon{width:34px;height:34px;color:#7f94ff;margin-bottom:9px}.drop-title{font-size:12px;font-weight:700}.drop-sub{font-size:10px;color:#7c89a7;margin-top:5px}.actions{display:flex;gap:9px;margin-top:13px}.btn{border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.035);padding:10px 13px;font-size:10px;font-weight:700;transition:.2s}.btn:hover{border-color:#7890ff88;transform:translateY(-1px)}.btn-primary{background:linear-gradient(110deg,#778bff,#55dce1);color:#07101d;border:0;box-shadow:0 6px 22px #6a8bff30}.btn-primary:hover{filter:brightness(1.08)}.actions .btn{flex:1}.sample-note{font:9px var(--mono);color:#74809b;align-self:center;margin-left:4px}.file-input{display:none}
+    .section-label{display:flex;justify-content:space-between;align-items:center;margin:20px 0 12px}.section-title{font-size:11px;font-weight:800;letter-spacing:.25px;display:flex;align-items:center;gap:9px}.section-title:before{content:"";height:14px;width:2px;border-radius:3px;background:linear-gradient(var(--blue),var(--cyan))}.section-tag{font:9px var(--mono);color:#75829f}.pipeline{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:14px;background:rgba(15,22,38,.61);overflow:hidden}.step{height:63px;display:flex;align-items:center;gap:12px;padding:0 18px;position:relative;color:#72809d;transition:.25s}.step:not(:last-child):after{content:"";position:absolute;width:20px;height:1px;background:#35415f;right:-10px;z-index:2}.step-num{width:27px;height:27px;display:grid;place-items:center;border:1px solid #303b57;border-radius:8px;font:10px var(--mono);color:#7f8ba8;flex:0 0 auto}.step-name{font-size:10px;font-weight:700}.step-status{font:8px var(--mono);margin-top:4px;color:#56627d;text-transform:uppercase;letter-spacing:.8px}.step.active{color:#dce5ff;background:linear-gradient(90deg,#697fff0c,transparent)}.step.active .step-num{border-color:#8a9bff;color:#a9b6ff;box-shadow:0 0 17px #7188ff30}.step.done .step-num{background:#56d99b;color:#071a19;border-color:#56d99b}.step.done .step-status{color:#6ad89d}.step.error .step-num{background:#ff757d;color:#26090d;border-color:#ff757d}
+    .metrics{display:grid;grid-template-columns:1.18fr repeat(3,1fr);gap:13px;margin-top:13px}.card{border:1px solid var(--line);background:var(--panel);backdrop-filter:blur(14px);border-radius:15px;min-width:0}.metric{padding:17px 19px;min-height:112px;display:flex;justify-content:space-between;align-items:center}.metric-label{font:9px var(--mono);letter-spacing:.7px;color:#8390ad;text-transform:uppercase}.metric-value{font-size:27px;letter-spacing:-1.5px;font-weight:700;margin-top:9px}.metric-foot{font-size:9px;color:#73809b;margin-top:4px}.ring-wrap{position:relative;width:67px;height:67px}.ring-wrap svg{transform:rotate(-90deg);width:67px;height:67px}.ring-bg{fill:none;stroke:#25304a;stroke-width:6}.ring-fill{fill:none;stroke:url(#ringGradient);stroke-width:6;stroke-linecap:round;stroke-dasharray:163.36;stroke-dashoffset:163.36;transition:stroke-dashoffset 1s ease}.ring-text{position:absolute;inset:0;display:grid;place-items:center;font:11px var(--mono);color:#e5f1ff}.metric-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:#6d86ff18;color:#94a4ff;font-size:14px}.metric-icon.green{background:#50ce9417;color:var(--green)}.metric-icon.amber{background:#f7b95315;color:var(--amber)}
+    .content-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px}.panel{padding:17px 18px}.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.panel-head strong{font-size:11px}.panel-sub{font:9px var(--mono);color:#7784a1;margin-top:4px}.mini-badge{font:8px var(--mono);color:#83ddbf;padding:5px 8px;border:1px solid #5fd9a528;background:#53d7980d;border-radius:5px;letter-spacing:.5px}.image-stage{height:284px;border-radius:11px;position:relative;overflow:hidden;background:#151f2d url('../sample_data/sample_tile.jpg') center/cover no-repeat;isolation:isolate}.image-stage:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#080d17c9 0%,transparent 32%,#09101b12 75%,#0c13262e 100%);z-index:-0}.image-empty{display:none;position:absolute;inset:0;place-items:center;background:radial-gradient(ellipse at 50% 60%,#1c456176,transparent 65%),#101a29;color:#8292b3}.image-stage.no-image{background-image:linear-gradient(135deg,#192438,#0d1421)}.scan-line{position:absolute;left:0;right:0;height:2px;top:-5px;background:linear-gradient(90deg,transparent,#62e5e8,transparent);box-shadow:0 0 18px #54e0e3;opacity:0;z-index:3}.image-stage.scanning .scan-line{opacity:1;animation:scan 2.5s ease-in-out infinite}.canvas-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}.image-top{position:absolute;top:12px;left:13px;right:13px;display:flex;justify-content:space-between;z-index:3}.image-chip{font:8px var(--mono);letter-spacing:.5px;padding:6px 8px;border-radius:5px;background:#09111dcc;border:1px solid #d4e2ff18;color:#d7e4f8;backdrop-filter:blur(5px)}.image-chip.right{color:var(--cyan)}.image-bottom{position:absolute;left:13px;right:13px;bottom:11px;display:flex;justify-content:space-between;align-items:end;z-index:3}.coordinates{font:8px var(--mono);color:#b0bfd1}.zoom-controls{display:flex;gap:5px}.zoom-controls span{padding:5px 7px;border-radius:4px;background:#09111dcc;color:#cad9ee;font:8px var(--mono)}.map-panel{padding:17px 18px;display:flex;flex-direction:column}.map-frame{position:relative;height:284px;border:1px solid #293653;border-radius:11px;overflow:hidden;background:radial-gradient(ellipse at 50% 46%,#253653 0,#17243b 48%,#11192a 100%)}#map{position:absolute;inset:0}.map-placeholder{position:absolute;inset:0;background-image:linear-gradient(#728bb715 1px,transparent 1px),linear-gradient(90deg,#728bb715 1px,transparent 1px);background-size:40px 40px;pointer-events:none}.map-legend{position:absolute;bottom:10px;left:10px;z-index:5;display:flex;gap:9px;padding:7px 9px;background:#09111ddd;border:1px solid #d4e2ff18;border-radius:6px;font:8px var(--mono);color:#acbad1;backdrop-filter:blur(7px)}.legend-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}.legend-green{background:var(--green)}.legend-amber{background:var(--amber)}.legend-red{background:var(--red)}.maplibregl-ctrl-attrib{display:none!important}.maplibregl-ctrl-group{background:#111a2b!important;border:1px solid #35415e!important}.maplibregl-ctrl button span{filter:invert(1)}
+    .lower-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px;margin-top:14px;margin-bottom:50px}.reason-panel,.history-panel{min-height:220px}.result-banner{border:1px solid #5fe0a528;background:linear-gradient(100deg,#4ad89b13,#54dfe20a);padding:12px 13px;border-radius:9px;display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}.result-icon{width:23px;height:23px;border-radius:7px;background:#55d89c1e;color:var(--green);display:grid;place-items:center;flex:0 0 auto}.result-title{font-size:10px;font-weight:800}.result-desc{font-size:9px;color:#8b9ab3;margin-top:4px;line-height:1.5}.reason-list{list-style:none;margin:0;padding:0}.reason-list li{position:relative;padding:8px 0 8px 19px;border-bottom:1px solid #ffffff09;color:#a4b0c7;font-size:9px;line-height:1.5}.reason-list li:last-child{border:0}.reason-list li:before{content:"✓";position:absolute;left:0;color:var(--green);font-size:10px}.reason-list li.warn:before{content:"!";color:var(--amber)}.reason-empty{color:#64718d;font-size:10px;padding:10px 0}.table-wrap{overflow:auto}.history-table{width:100%;border-collapse:collapse;min-width:420px}.history-table th{text-align:left;font:8px var(--mono);letter-spacing:.7px;color:#697793;text-transform:uppercase;padding:9px 8px;border-bottom:1px solid var(--line)}.history-table td{font:9px var(--mono);color:#aab6cd;padding:10px 8px;border-bottom:1px solid #ffffff08}.history-table tr:last-child td{border:0}.action-pill{display:inline-block;padding:4px 7px;border-radius:5px;font:8px var(--mono);letter-spacing:.4px}.pill-approve{background:#4bd29017;color:#6be0a1}.pill-flag{background:#ffbd5817;color:#ffc56d}.pill-resurvey{background:#ff6f7b17;color:#ff858c}.confidence{color:#e0e8f5}.empty-row{text-align:center!important;color:#687590!important;padding:26px!important}.footer{border-top:1px solid var(--line);padding:20px 0 28px;display:flex;justify-content:space-between;color:#5c6984;font:9px var(--mono)}.footer b{font-weight:400;color:#8c99b2}
+    .policy-lab{display:grid;grid-template-columns:1fr 1.1fr 1fr;align-items:center;gap:22px;margin-top:14px;padding:20px 22px}.policy-intro h2{font-size:16px;letter-spacing:-.5px;margin:11px 0 6px}.policy-intro p,.policy-control p{font-size:10px;line-height:1.6;color:#8491ad;margin:0}.policy-control label{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:700;margin-bottom:13px}.policy-control label strong{font:12px var(--mono);color:var(--cyan)}.policy-control input{width:100%;accent-color:#63dce5;cursor:pointer}.range-labels{display:flex;justify-content:space-between;color:#64718d;font:8px var(--mono);margin-top:4px}.policy-control p{margin-top:10px}.policy-results{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.policy-stat{padding:12px 10px;border-radius:9px;border:1px solid #ffffff0d;background:#080e1b80}.policy-stat span{display:block;color:#7785a2;font:8px var(--mono);text-transform:uppercase;letter-spacing:.35px}.policy-stat strong{display:block;margin-top:8px;font-size:20px;letter-spacing:-.7px}.policy-stat:first-child strong{color:var(--green)}.policy-stat:nth-child(2) strong{color:var(--amber)}.policy-stat:last-child strong{color:var(--red)}
+    @keyframes pulse{50%{opacity:.4;box-shadow:0 0 3px #68e3a0}}@keyframes scan{0%{top:0}100%{top:100%}}@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.hero,.pipeline,.metrics,.content-grid,.lower-grid{animation:rise .65s both}.metrics{animation-delay:.08s}.content-grid{animation-delay:.15s}.lower-grid{animation-delay:.22s}
+    @media(max-width:1000px){.shell{padding:0 25px}.hero{gap:28px}.metrics{grid-template-columns:repeat(2,1fr)}.content-grid{grid-template-columns:1fr 1fr}.policy-lab{grid-template-columns:1fr 1fr}.policy-results{grid-column:1/-1}.step{padding:0 11px;gap:8px}.step-name{font-size:9px}}
+    @media(max-width:700px){.shell{padding:0 16px}.topbar{height:62px}.top-right{gap:12px}.top-right .nav-extra{display:none}.hero{grid-template-columns:1fr;gap:24px;padding:37px 0 20px}h1{font-size:43px;letter-spacing:-2.4px;margin-top:13px}.hero-copy{font-size:12px}.hero-meta{gap:12px;flex-wrap:wrap;font-size:9px}.upload-card{min-height:0}.pipeline{grid-template-columns:repeat(5,minmax(84px,1fr));overflow:auto}.step{height:61px;padding:0 10px;gap:7px}.step-num{width:23px;height:23px}.step-name{font-size:8px}.step-status{font-size:7px}.metrics{gap:8px}.metric{padding:13px;min-height:99px}.metric-value{font-size:23px}.ring-wrap,.ring-wrap svg{width:56px;height:56px}.content-grid,.lower-grid{grid-template-columns:1fr;gap:10px}.policy-lab{grid-template-columns:1fr;gap:17px;padding:17px}.policy-results{grid-column:auto;gap:6px}.policy-stat{padding:10px 7px}.policy-stat strong{font-size:18px}.image-stage,.map-frame{height:245px}.panel{padding:14px}.section-label{margin-top:18px}.footer{font-size:8px}.footer span:last-child{display:none}}
+    @media(max-width:390px){.metrics{grid-template-columns:1fr 1fr}.metric{padding:11px}.ring-wrap,.ring-wrap svg{width:48px;height:48px}.brand{font-size:15px}.sample-note{display:none}.actions .btn{font-size:9px;padding:9px 8px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="DrishtiX Flow home"><span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 17.5 12 4l8 13.5H4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="14" r="2.1" fill="currentColor"/><path d="M12 16v4m-4-1h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><span>drishti<em>x</em> flow</span></a>
+      <div class="top-right"><span class="nav-extra">Mission control</span><span class="nav-extra">Field intelligence</span><span class="live"><i class="live-dot"></i> SYSTEM LIVE</span><span class="avatar">DX</span></div>
+    </header>
+    <main id="top">
+      <section class="hero">
+        <div><div class="eyebrow">Autonomous parcel intelligence</div><h1>From drone to decision,<br><span class="gradient-text">on autopilot.</span></h1><p class="hero-copy">One intelligent flow for every aerial survey. DrishtiX reads the image, checks it against GIS, explains its call, and routes the next action — without the spreadsheet shuffle.</p><div class="hero-meta"><span>01 / INGEST <b>→</b></span><span>02 / REASON <b>→</b></span><span>03 / ACT</span></div></div>
+        <div class="upload-card"><div class="upload-head"><strong>Start a parcel review</strong><span class="tile-format">GEOTIFF · JPG · PNG</span></div><div class="drop-zone" id="dropZone"><svg class="upload-icon" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="drop-title">Drop a drone tile to begin</div><div class="drop-sub">Your imagery stays in your workspace</div><input class="file-input" id="fileInput" type="file" accept="image/*,.tif,.tiff"></div><div class="actions"><button class="btn btn-primary" id="browseBtn">↑ &nbsp; Upload imagery</button><button class="btn" id="sampleBtn">✦ &nbsp; Use sample tile</button><span class="sample-note">~ 1.2 sec / tile</span></div></div>
+      </section>
+      <div class="section-label"><div class="section-title">Live processing pipeline</div><div class="section-tag" id="batchTag">AWAITING IMAGERY</div></div>
+      <section class="pipeline" aria-label="Five-step mapping workflow"><div class="step" data-step="0"><span class="step-num">01</span><div><div class="step-name">Ingest</div><div class="step-status">Standby</div></div></div><div class="step" data-step="1"><span class="step-num">02</span><div><div class="step-name">Detect</div><div class="step-status">Standby</div></div></div><div class="step" data-step="2"><span class="step-num">03</span><div><div class="step-name">Reason</div><div class="step-status">Standby</div></div></div><div class="step" data-step="3"><span class="step-num">04</span><div><div class="step-name">Decide</div><div class="step-status">Standby</div></div></div><div class="step" data-step="4"><span class="step-num">05</span><div><div class="step-name">Act</div><div class="step-status">Standby</div></div></div></section>
+      <section class="metrics" aria-label="Batch metrics"><article class="card metric"><div><div class="metric-label">Automation rate</div><div class="metric-value" id="automationRate">—</div><div class="metric-foot" id="automationFoot">No parcels processed</div></div><div class="ring-wrap"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="ringGradient"><stop stop-color="#758aff"/><stop offset="1" stop-color="#5ce1e6"/></linearGradient></defs><circle class="ring-bg" cx="32" cy="32" r="26"/><circle class="ring-fill" id="ringFill" cx="32" cy="32" r="26"/></svg><span class="ring-text" id="ringText">0%</span></div></article><article class="card metric"><div><div class="metric-label">Auto-approved</div><div class="metric-value" id="approvedCount">0</div><div class="metric-foot">Ready to publish</div></div><span class="metric-icon green">✓</span></article><article class="card metric"><div><div class="metric-label">Needs review</div><div class="metric-value" id="flaggedCount">0</div><div class="metric-foot">Surveyor attention</div></div><span class="metric-icon amber">◇</span></article><article class="card metric"><div><div class="metric-label">Re-survey</div><div class="metric-value" id="resurveyCount">0</div><div class="metric-foot">New flight required</div></div><span class="metric-icon">↗</span></article></section>
+      <section class="content-grid"><article class="card panel"><div class="panel-head"><div><strong>Mission imagery</strong><div class="panel-sub" id="imageName">SAMPLE TILE · BENGALURU SECTOR 04</div></div><span class="mini-badge" id="imageQaBadge">QA READY</span></div><div class="image-stage" id="imageStage"><div class="scan-line"></div><div class="image-top"><span class="image-chip" id="imageMeta">GSD 4.2 CM / PX</span><span class="image-chip right" id="detectMeta">LIVE DETECTION OVERLAY</span></div><canvas id="detectionCanvas" class="canvas-overlay"></canvas><div class="image-bottom"><span class="coordinates">12°58′17.8″N&nbsp; 77°35′40.6″E</span><span class="zoom-controls"><span>−</span><span>1 : 2400</span><span>+</span></span></div></div></article>
+        <article class="card map-panel"><div class="panel-head"><div><strong>Parcel intelligence map</strong><div class="panel-sub">GIS REFERENCE · LIVE DECISION LAYERS</div></div><span class="mini-badge">POSTGIS</span></div><div class="map-frame"><div class="map-placeholder" id="mapPlaceholder"></div><div id="map" aria-label="Map of parcels in Bengaluru"></div><div class="map-legend"><span><i class="legend-dot legend-green"></i>Approved</span><span><i class="legend-dot legend-amber"></i>Review</span><span><i class="legend-dot legend-red"></i>Re-survey</span></div></div></article></section>
+      <section class="policy-lab card" aria-labelledby="policyTitle"><div class="policy-intro"><span class="mini-badge">WHAT-IF · READ ONLY</span><h2 id="policyTitle">Decision sandbox</h2><p>Adjust the confidence bar and preview how this flight’s routing changes. Recorded decisions stay untouched.</p></div><div class="policy-control"><label for="confidenceThreshold">Auto-approval confidence <strong id="thresholdValue">85%</strong></label><input id="confidenceThreshold" type="range" min="60" max="95" value="85" aria-describedby="policyNote"><div class="range-labels"><span>60% · flexible</span><span>95% · cautious</span></div><p id="policyNote">Run a tile to simulate its parcels against this threshold.</p></div><div class="policy-results" aria-live="polite"><div class="policy-stat"><span>Auto-publish</span><strong id="simApproved">—</strong></div><div class="policy-stat"><span>Human review</span><strong id="simFlagged">—</strong></div><div class="policy-stat"><span>Re-flight</span><strong id="simResurvey">—</strong></div></div></section>
+      <section class="lower-grid"><article class="card panel reason-panel"><div class="panel-head"><div><strong>Why the agent decided</strong><div class="panel-sub">TRACEABLE · PARCEL <span id="reasonParcel">—</span></div></div><span class="mini-badge" id="decisionBadge">WAITING</span></div><div class="result-banner" id="resultBanner"><span class="result-icon">✦</span><div><div class="result-title" id="resultTitle">Ready when you are</div><div class="result-desc" id="resultDesc">Drop in a drone tile or run the sample to see the agent in action.</div></div></div><ul class="reason-list" id="reasonList"><li class="reason-empty">Decision evidence will appear here.</li></ul></article>
+        <article class="card panel history-panel"><div class="panel-head"><div><strong>Decision history</strong><div class="panel-sub">RECENT PARCEL EVENTS · AUDIT TRAIL</div></div><button class="btn" id="refreshBtn" style="padding:7px 9px;font-size:9px">↻ &nbsp; Refresh</button></div><div class="table-wrap"><table class="history-table"><thead><tr><th>Parcel ID</th><th>Decision</th><th>Confidence</th><th>GIS IoU</th><th>Time</th></tr></thead><tbody id="historyBody"><tr><td class="empty-row" colspan="5">Connecting to decision ledger…</td></tr></tbody></table></div></article></section>
+    </main>
+    <footer class="footer"><span>DRISHTIX FLOW <b>·</b> FIELD INTELLIGENCE</span><span>VISION <b>+</b> GIS <b>+</b> ACTION</span><span>DECISION SYSTEM &nbsp; / &nbsp; v1.0.0</span></footer>
+  </div>
+<script>
+  const API = '';
+  const $ = (selector) => document.querySelector(selector);
+  const steps = [...document.querySelectorAll('.step')];
+  let mapInstance = null;
+  let latestParcels = [];
+  let latestDecisions = [];
+  let latestQaPassed = true;
+  const colorFor = (action) => action === 'APPROVE' ? '#75e0a0' : action === 'RESURVEY' ? '#ff777e' : '#ffc56d';
+
+  function setStep(index, state, label) {
+    const step = steps[index];
+    step.classList.remove('active', 'done', 'error');
+    if (state) step.classList.add(state);
+    step.querySelector('.step-status').textContent = label;
+  }
+  function resetSteps() { steps.forEach((_, i) => setStep(i, '', 'Standby')); }
+  function progressStep(index, status = 'Processing') {
+    steps.forEach((step, i) => setStep(i, i < index ? 'done' : i === index ? 'active' : '', i < index ? 'Complete' : i === index ? status : 'Standby'));
+  }
+  function animateNumber(element, value, suffix = '') {
+    const start = Number(element.dataset.value || 0);
+    const duration = 650;
+    const startTime = performance.now();
+    function frame(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      element.textContent = `${Math.round(start + (value - start) * eased)}${suffix}`;
+      if (t < 1) requestAnimationFrame(frame);
+    }
+    element.dataset.value = String(value);
+    requestAnimationFrame(frame);
+  }
+  function drawBoxes(detections, decisions) {
+    const canvas = $('#detectionCanvas');
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+    const context = canvas.getContext('2d'); context.scale(dpr, dpr); context.clearRect(0, 0, rect.width, rect.height);
+    detections.forEach((item, index) => {
+      const box = item.bbox || [0.18, 0.16, 0.79, 0.82];
+      const x = box[0] * rect.width, y = box[1] * rect.height;
+      const w = (box[2] - box[0]) * rect.width, h = (box[3] - box[1]) * rect.height;
+      const action = decisions[index]?.action || 'FLAG'; const color = colorFor(action);
+      context.strokeStyle = color; context.lineWidth = 2; context.setLineDash([7, 4]); context.strokeRect(x, y, w, h); context.setLineDash([]);
+      context.fillStyle = color; context.globalAlpha = .14; context.fillRect(x, y, w, h); context.globalAlpha = 1;
+      const label = `${item.parcel_id}  ${(item.confidence * 100).toFixed(0)}% · ${action}`;
+      context.font = '10px "DM Mono", monospace'; const labelW = context.measureText(label).width + 14;
+      context.fillStyle = color; context.fillRect(x, Math.max(0, y - 22), labelW, 20);
+      context.fillStyle = '#09111a'; context.fillText(label, x + 7, Math.max(14, y - 8));
+    });
+  }
+  function showDecision(decision) {
+    const action = decision.action;
+    const titles = { APPROVE: 'Parcel auto-published', FLAG: 'Sent to surveyor for review', RESURVEY: 'Re-survey scheduled' };
+    const descriptions = { APPROVE: 'GIS record and detected boundary are aligned. No manual touch needed.', FLAG: 'A human review task has been queued with the evidence attached.', RESURVEY: 'Image quality or model confidence requires a fresh flight.' };
+    const tone = colorFor(action);
+    $('#resultTitle').textContent = titles[action] || 'Decision ready';
+    $('#resultDesc').textContent = descriptions[action] || 'The parcel decision has been recorded.';
+    $('#resultBanner').style.borderColor = `${tone}44`;
+    $('#resultBanner').style.background = `linear-gradient(100deg,${tone}16,${tone}05)`;
+    $('.result-icon').style.color = tone; $('.result-icon').textContent = action === 'APPROVE' ? '✓' : action === 'FLAG' ? '!' : '↗';
+    $('#decisionBadge').textContent = action; $('#decisionBadge').style.color = tone; $('#decisionBadge').style.borderColor = `${tone}55`;
+    $('#reasonParcel').textContent = decision.parcel_id;
+    const list = $('#reasonList'); list.replaceChildren();
+    decision.reasons.forEach((reason) => { const li = document.createElement('li'); li.textContent = reason; if (action !== 'APPROVE') li.classList.add('warn'); list.append(li); });
+  }
+  function updateMetrics(summary) {
+    animateNumber($('#automationRate'), summary.automation_rate, '%');
+    animateNumber($('#ringText'), summary.automation_rate, '%');
+    animateNumber($('#approvedCount'), summary.approved);
+    animateNumber($('#flaggedCount'), summary.flagged);
+    animateNumber($('#resurveyCount'), summary.resurvey);
+    $('#automationFoot').textContent = `${summary.total} parcel${summary.total === 1 ? '' : 's'} in this batch`;
+    $('#ringFill').style.strokeDashoffset = `${163.36 * (1 - summary.automation_rate / 100)}`;
+  }
+  function updatePolicyPreview() {
+    const threshold = Number($('#confidenceThreshold').value) / 100;
+    $('#thresholdValue').textContent = `${Math.round(threshold * 100)}%`;
+    const counts = { APPROVE: 0, FLAG: 0, RESURVEY: 0 };
+    latestDecisions.forEach((decision) => {
+      let action;
+      if (!latestQaPassed || decision.confidence < 0.60) action = 'RESURVEY';
+      else if (decision.iou == null || decision.area_mismatch_pct == null) action = 'FLAG';
+      else if (decision.confidence >= threshold && decision.iou >= 0.70 && decision.area_mismatch_pct <= 25) action = 'APPROVE';
+      else action = 'FLAG';
+      counts[action] += 1;
+    });
+    $('#simApproved').textContent = counts.APPROVE;
+    $('#simFlagged').textContent = counts.FLAG;
+    $('#simResurvey').textContent = counts.RESURVEY;
+    $('#policyNote').textContent = latestDecisions.length
+      ? `Previewing ${latestDecisions.length} parcel${latestDecisions.length === 1 ? '' : 's'} from the latest tile · no records changed.`
+      : 'Run a tile to simulate its parcels against this threshold.';
+  }
+  function flashPipeline(action) {
+    steps.forEach((_, i) => setStep(i, 'done', 'Complete'));
+    setStep(4, 'done', action === 'APPROVE' ? 'Published' : action === 'FLAG' ? 'Review queued' : 'Task created');
+  }
+  async function processFile(file) {
+    if (!file) return;
+    resetSteps(); progressStep(0, 'Uploading'); $('#batchTag').textContent = 'INGESTING TILE';
+    const stage = $('#imageStage'); stage.classList.add('scanning'); stage.classList.remove('no-image');
+    const objectUrl = URL.createObjectURL(file); stage.style.backgroundImage = `url("${objectUrl}")`;
+    $('#imageName').textContent = file.name.toUpperCase(); $('#imageQaBadge').textContent = 'QA CHECKING';
+    try {
+      const form = new FormData(); form.append('file', file);
+      progressStep(1, 'Detecting');
+      const detectionResponse = await fetch(`${API}/detect`, { method: 'POST', body: form });
+      if (!detectionResponse.ok) throw new Error((await detectionResponse.json()).detail || 'Image detection failed');
+      const detectionResult = await detectionResponse.json();
+      progressStep(2, 'GIS matching'); $('#batchTag').textContent = `BATCH ${detectionResult.batch_id.slice(0, 8).toUpperCase()}`;
+      const qa = detectionResult.image_qa;
+      $('#imageQaBadge').textContent = qa.passed ? 'QA PASSED' : 'QA FAILED'; $('#imageQaBadge').style.color = qa.passed ? 'var(--green)' : 'var(--red)';
+      $('#imageMeta').textContent = `${detectionResult.image_size.width} × ${detectionResult.image_size.height} PX · SHARPNESS ${qa.sharpness}`;
+      const decideResponse = await fetch(`${API}/decide`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ batch_id: detectionResult.batch_id, image_qa: qa, detections: detectionResult.detections }) });
+      if (!decideResponse.ok) throw new Error((await decideResponse.json()).detail || 'Decision engine unavailable');
+      const result = await decideResponse.json();
+      latestDecisions = result.decisions;
+      latestQaPassed = qa.passed;
+      updatePolicyPreview();
+      progressStep(3, 'Decision ready');
+      for (const item of result.decisions) {
+        if (item.action !== 'APPROVE') {
+          await fetch(`${API}/notify`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ parcel_id: item.parcel_id, action: item.action, message: item.reasons.join(' '), batch_id: result.batch_id }) });
+        }
+      }
+      progressStep(4, 'Routing'); updateMetrics(result.summary);
+      if (result.decisions.length) { showDecision(result.decisions[0]); drawBoxes(detectionResult.detections, result.decisions); flashPipeline(result.decisions[0].action); }
+      else { showDecision({ parcel_id: '—', action: 'RESURVEY', reasons: ['No parcel boundaries were detected in this tile.'] }); flashPipeline('RESURVEY'); }
+      $('#detectMeta').textContent = `${detectionResult.detections.length} PARCEL${detectionResult.detections.length === 1 ? '' : 'S'} DETECTED`;
+      $('#batchTag').textContent = result.summary.batch_action.replace('_', ' ').toUpperCase();
+      await refreshRecords();
+    } catch (error) {
+      resetSteps(); setStep(0, 'error', 'Error'); $('#batchTag').textContent = 'PIPELINE ERROR';
+      $('#resultTitle').textContent = 'Could not process this image'; $('#resultDesc').textContent = error.message;
+      $('#imageQaBadge').textContent = 'CHECK FAILED'; $('#imageQaBadge').style.color = 'var(--red)';
+    } finally { stage.classList.remove('scanning'); }
+  }
+  function actionClass(action) { return action === 'APPROVE' ? 'pill-approve' : action === 'RESURVEY' ? 'pill-resurvey' : 'pill-flag'; }
+  async function refreshRecords() {
+    try {
+      const response = await fetch(`${API}/records`); if (!response.ok) throw new Error('records unavailable');
+      const data = await response.json(); latestParcels = data.parcels || [];
+      const body = $('#historyBody'); body.replaceChildren();
+      if (!data.records.length) { const row = body.insertRow(); const cell = row.insertCell(); cell.colSpan = 5; cell.className = 'empty-row'; cell.textContent = 'No decisions yet — upload imagery to begin.'; }
+      data.records.forEach((record) => {
+        const row = body.insertRow();
+        [record.parcel_id, null, `${Math.round(record.confidence * 100)}%`, record.iou == null ? '—' : Number(record.iou).toFixed(2), new Date(record.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })].forEach((value, index) => {
+          const cell = row.insertCell();
+          if (index === 1) { const badge = document.createElement('span'); badge.className = `action-pill ${actionClass(record.action)}`; badge.textContent = record.action; cell.append(badge); }
+          else cell.textContent = value;
+        });
+      });
+      updateMap(latestParcels);
+    } catch (_) { $('#historyBody').innerHTML = '<tr><td class="empty-row" colspan="5">History service is temporarily unavailable.</td></tr>'; }
+  }
+  function updateMap(parcels) {
+    if (!mapInstance || !parcels?.length) return;
+    const features = parcels.map((parcel, index) => {
+      const lng = Number(parcel.lon) || 77.5946 + index * .0035, lat = Number(parcel.lat) || 12.9716 + index * .002;
+      const size = .0012;
+      return { type: 'Feature', properties: { parcel_id: parcel.parcel_id, action: parcel.action || 'FLAG' }, geometry: { type: 'Polygon', coordinates: [[[lng-size,lat-size],[lng+size,lat-size],[lng+size,lat+size],[lng-size,lat+size],[lng-size,lat-size]]] } };
+    });
+    const geojson = { type: 'FeatureCollection', features };
+    const source = mapInstance.getSource('parcels');
+    if (source) source.setData(geojson);
+    else {
+      mapInstance.addSource('parcels', { type: 'geojson', data: geojson });
+      mapInstance.addLayer({ id: 'parcel-fill', type: 'fill', source: 'parcels', paint: { 'fill-color': ['match',['get','action'],'APPROVE','#75e0a0','RESURVEY','#ff777e','#ffc56d'], 'fill-opacity': .22 } });
+      mapInstance.addLayer({ id: 'parcel-line', type: 'line', source: 'parcels', paint: { 'line-color': ['match',['get','action'],'APPROVE','#75e0a0','RESURVEY','#ff777e','#ffc56d'], 'line-width': 2 } });
+      mapInstance.on('click', 'parcel-fill', (event) => { const props = event.features?.[0]?.properties; if (props) new maplibregl.Popup({ closeButton: false }).setLngLat(event.lngLat).setHTML(`<div style="font:11px DM Mono;color:#111">${props.parcel_id} · ${props.action}</div>`).addTo(mapInstance); });
+      mapInstance.on('mouseenter', 'parcel-fill', () => { mapInstance.getCanvas().style.cursor = 'pointer'; });
+      mapInstance.on('mouseleave', 'parcel-fill', () => { mapInstance.getCanvas().style.cursor = ''; });
+    }
+    $('#mapPlaceholder').style.display = 'none';
+  }
+  function initMap() {
+    if (!window.maplibregl) return;
+    try {
+      mapInstance = new maplibregl.Map({ container: 'map', center: [77.5946, 12.9716], zoom: 13, attributionControl: false, style: { version: 8, sources: { 'carto-dark': { type: 'raster', tiles: ['https://basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'], tileSize: 256, attribution: '© OpenStreetMap © CARTO' } }, layers: [{ id: 'basemap', type: 'raster', source: 'carto-dark', paint: { 'raster-opacity': .57 } }] } });
+      mapInstance.on('load', () => updateMap(latestParcels));
+      mapInstance.on('error', () => $('#mapPlaceholder').style.display = 'block');
+    } catch (_) { $('#mapPlaceholder').style.display = 'block'; }
+  }
+  const input = $('#fileInput');
+  $('#browseBtn').addEventListener('click', () => input.click());
+  input.addEventListener('change', () => { if (input.files[0]) processFile(input.files[0]); input.value = ''; });
+  $('#sampleBtn').addEventListener('click', async () => {
+    $('#sampleBtn').textContent = '◌  Loading sample…';
+    try { const response = await fetch('/sample_data/sample_tile.jpg'); const blob = await response.blob(); await processFile(new File([blob], 'bengaluru-sector-04.jpg', { type: 'image/jpeg' })); }
+    catch (_) { $('#resultTitle').textContent = 'Sample tile not found'; $('#resultDesc').textContent = 'Generate sample_data/sample_tile.jpg and reload.'; }
+    finally { $('#sampleBtn').innerHTML = '✦ &nbsp; Use sample tile'; }
+  });
+  const dropZone = $('#dropZone');
+  ['dragenter','dragover'].forEach((event) => dropZone.addEventListener(event, (e) => { e.preventDefault(); dropZone.classList.add('drag'); }));
+  ['dragleave','drop'].forEach((event) => dropZone.addEventListener(event, (e) => { e.preventDefault(); dropZone.classList.remove('drag'); }));
+  dropZone.addEventListener('drop', (event) => { const file = event.dataTransfer.files[0]; if (file) processFile(file); });
+  $('#refreshBtn').addEventListener('click', refreshRecords);
+  $('#confidenceThreshold').addEventListener('input', updatePolicyPreview);
+  window.addEventListener('resize', () => { if (mapInstance) mapInstance.resize(); if ($('#detectionCanvas').width) drawBoxes([], []); });
+  initMap(); refreshRecords(); updatePolicyPreview();
+</script>
+</body>
+</html>

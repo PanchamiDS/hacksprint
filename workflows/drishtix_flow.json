@@ -1,0 +1,152 @@
+{
+  "name": "DrishtiX Flow — Drone to Decision",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "drishtix-upload",
+        "responseMode": "lastNode",
+        "options": {"binaryData": true}
+      },
+      "id": "f0ab3c18-b51e-4e38-b321-6c5bf2a7c200",
+      "name": "Drone upload webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [-760, 180],
+      "webhookId": "drishtix-upload"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/detect",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {"response": {"response": {"responseFormat": "json"}}}
+      },
+      "id": "8b0bc93a-81ec-43a9-a301-452809378eb0",
+      "name": "Run image QA + detection",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-510, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/decide",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ batch_id: $json.batch_id, image_qa: $json.image_qa, detections: $json.detections }) }}",
+        "options": {"response": {"response": {"responseFormat": "json"}}}
+      },
+      "id": "c1b0689e-35ca-4690-8d8c-583af0867ab5",
+      "name": "Reason + decide",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-250, 180]
+    },
+    {
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+                "conditions": [{"leftValue": "={{ $json.summary.batch_action }}", "rightValue": "auto_publish", "operator": {"type": "string", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "auto_publish"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+                "conditions": [{"leftValue": "={{ $json.summary.batch_action }}", "rightValue": "review", "operator": {"type": "string", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "review"
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+                "conditions": [{"leftValue": "={{ $json.summary.batch_action }}", "rightValue": "resurvey", "operator": {"type": "string", "operation": "equals"}}],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "resurvey"
+            }
+          ]
+        },
+        "options": {"fallbackOutput": "extra"}
+      },
+      "id": "d49e2e3e-4df2-4880-9cbc-0ce83601057a",
+      "name": "Route by decision",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [0, 180]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO published_parcels (batch_id, parcel_id) VALUES ('{{$json.batch_id}}'::uuid, '{{$json.decisions[0].parcel_id}}') ON CONFLICT (batch_id, parcel_id) DO NOTHING RETURNING parcel_id, published_at;",
+        "options": {}
+      },
+      "id": "d3b9c149-5d09-4f10-a2c4-228a6ff01e9b",
+      "name": "Save approved parcel to PostGIS",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [300, -80]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/notify",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ batch_id: $json.batch_id, parcel_id: $json.decisions[0].parcel_id, action: $json.decisions[0].action, message: $json.decisions[0].reasons.join(' '), channel: 'surveyor' }) }}",
+        "options": {"response": {"response": {"responseFormat": "json"}}}
+      },
+      "id": "06e1df6b-3cf2-43b6-9eef-26d3bc2dd498",
+      "name": "Notify surveyor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 180]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://api:8000/notify",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ batch_id: $json.batch_id, parcel_id: $json.decisions[0].parcel_id, action: 'RESURVEY', message: $json.decisions[0].reasons.join(' '), channel: 'resurvey_task' }) }}",
+        "options": {"response": {"response": {"responseFormat": "json"}}}
+      },
+      "id": "8ccfc49e-2993-4b46-8e2f-e31f9f72c905",
+      "name": "Create re-survey task",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 420]
+    }
+  ],
+  "connections": {
+    "Drone upload webhook": {"main": [[{"node": "Run image QA + detection", "type": "main", "index": 0}]]},
+    "Run image QA + detection": {"main": [[{"node": "Reason + decide", "type": "main", "index": 0}]]},
+    "Reason + decide": {"main": [[{"node": "Route by decision", "type": "main", "index": 0}]]},
+    "Route by decision": {"main": [[{"node": "Save approved parcel to PostGIS", "type": "main", "index": 0}], [{"node": "Notify surveyor", "type": "main", "index": 0}], [{"node": "Create re-survey task", "type": "main", "index": 0}]]}
+  },
+  "active": false,
+  "settings": {"executionOrder": "v1", "timezone": "Asia/Kolkata"},
+  "versionId": "39cf5a6f-d5d0-47e9-a738-8c3d6d88dcfa",
+  "meta": {"templateCredsSetupCompleted": false},
+  "tags": []
+}

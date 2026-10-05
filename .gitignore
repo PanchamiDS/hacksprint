@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+
+# Model weights and generated runtime data
+models/*.pt
+models/*.onnx
+*.log
+
+# Editor / operating system
+.vscode/
+.idea/
+.DS_Store

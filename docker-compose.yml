@@ -1,0 +1,63 @@
+services:
+  postgis:
+    image: postgis/postgis:16-3.4
+    container_name: drishtix-postgis
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: drishtix
+      POSTGRES_USER: drishtix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-drishtix_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drishtix -d drishtix"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  api:
+    build: .
+    container_name: drishtix-api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://drishtix:${POSTGRES_PASSWORD:-drishtix_dev}@postgis:5432/drishtix
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models:ro
+    depends_on:
+      postgis:
+        condition: service_healthy
+
+  n8n:
+    image: n8nio/n8n:1.82.3
+    container_name: drishtix-n8n
+    restart: unless-stopped
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+      GENERIC_TIMEZONE: Asia/Kolkata
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: postgis
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: drishtix
+      DB_POSTGRESDB_USER: drishtix
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD:-drishtix_dev}
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      postgis:
+        condition: service_healthy
+
+volumes:
+  postgis_data:
+  n8n_data:
